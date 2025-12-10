@@ -1,7 +1,7 @@
-# main.py
 import streamlit as st
 import pandas as pd
 from datetime import datetime
+from PIL import Image
 import os
 
 from utils import (
@@ -13,19 +13,59 @@ from utils import (
 # Setup awal
 ensure_setup()
 
-st.set_page_config(page_title="Manajemen Aset Barcode", layout="wide")
-st.title("📦 Sistem Manajemen Aset Rumah Tangga dengan Barcode")
+# LOGIN SEDERHANA
 
-menu = st.sidebar.selectbox(
-    "Menu",
-    ["Dashboard", "Tambah Aset", "Lihat Aset", "Update Kondisi",
-     "Hapus Aset", "Scan Barcode", "Download CSV", "Log"]
-)
+if "login" not in st.session_state:
+    st.session_state.login = False
+
+# Akun dummy (bisa kamu ganti)
+USERNAME = "admin"
+PASSWORD = "1"
+
+if not st.session_state.login:
+    st.title("Login Sistem Aset")
+
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
+
+    if st.button("Login"):
+        if username == USERNAME and password == PASSWORD:
+            st.session_state.login = True
+            st.success("Login berhasil!")
+            st.rerun()
+        else:
+            st.error("Username atau password salah!")
+
+    st.stop()  # menghentikan akses ke sistem sebelum login
+
+#TAMPILAN MENU
+with st.sidebar:
+    st.markdown('<div class="menu-title">☰  MENU UTAMA</div>', unsafe_allow_html=True)
+
+    menu = option_menu(
+        None,       # hilangkan judul bawaan
+        ["Dashboard", "Tambah Aset", "Lihat Aset", "Update Kondisi",
+         "Hapus Aset", "Scan Barcode", "Log Aktivitas", "Log out"],
+        icons=["speedometer2", "plus-circle", "card-list", "arrow-repeat",
+               "trash", "qr-code-scan", "journal-text", "box-arrow-right"],
+        default_index=0,
+        styles={
+            "container": {"padding": "0", "background-color": "#4e73df"},
+            "icon": {"color": "white", "font-size": "18px"},
+            "nav-link": {
+                "color": "white",
+                "font-size": "16px",
+                "text-align": "left",
+                "margin": "3px",
+            },
+            "nav-link-selected": {"background-color": "#2e59d9"},
+        },
+    )
 
 
 # DASHBOARD
 if menu == "Dashboard":
-    st.header("📊 Dashboard")
+    st.header("Dashboard")
     df = load_master()
 
     st.metric("Total Aset", len(df))
@@ -37,14 +77,11 @@ if menu == "Dashboard":
         st.info("Belum ada data aset.")
 
 # TAMBAH ASET
-elif menu == "Tambah Aset":
-    st.header("➕ Tambah Aset")
 
+elif menu == "Tambah Aset":
+    st.header("Tambah Aset")
     with st.form("form_tambah"):
-        raw_id = st.text_input(
-            "ID Aset:",
-            value=f"AS{datetime.now().strftime('%y%m%d%H%M%S')}"
-        )
+        raw_id = st.text_input("Id Aset:")
         nama = st.text_input("Nama Aset:")
         kategori = st.text_input("Kategori:")
         kondisi = st.selectbox("Kondisi:", ["baik", "rusak", "hilang"])
@@ -52,7 +89,7 @@ elif menu == "Tambah Aset":
         submit = st.form_submit_button("Simpan")
 
     if submit:
-        if raw_id.strip() == "" or nama.strip() == "":
+        if raw_id is None or raw_id.strip() == "" or nama.strip() == "":
             st.error("ID dan nama wajib diisi!")
         else:
             id_aset = safe_new_id(raw_id.strip())
@@ -81,10 +118,10 @@ elif menu == "Tambah Aset":
             with open(qr_path, "rb") as f:
                 st.download_button("Download QR", f, file_name=f"{id_aset}.png")
 
-
 # LIHAT ASET
+
 elif menu == "Lihat Aset":
-    st.header("📋 Daftar Aset")
+    st.header("Daftar Aset")
     df = load_master()
 
     if df.empty:
@@ -96,10 +133,10 @@ elif menu == "Lihat Aset":
 
         st.dataframe(df, use_container_width=True)
 
-
 # UPDATE KONDISI
+
 elif menu == "Update Kondisi":
-    st.header("🔧 Update Kondisi Aset")
+    st.header("Update Kondisi Aset")
     df = load_master()
 
     if df.empty:
@@ -124,10 +161,10 @@ elif menu == "Update Kondisi":
 
             st.success("Kondisi berhasil diperbarui!")
 
-
 # HAPUS ASET
+
 elif menu == "Hapus Aset":
-    st.header("🗑 Hapus Aset")
+    st.header("Hapus Aset")
     df = load_master()
 
     if df.empty:
@@ -143,4 +180,33 @@ elif menu == "Hapus Aset":
             new_df = df[df["id_aset"] != id_aset]
             save_master(new_df)
 
-          
+            # Hapus barcode jika ada
+            if os.path.exists(row["barcode"]):
+                os.remove(row["barcode"])
+
+            # Log
+            append_log(
+                datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                id_aset,
+                "hapus",
+                f"{row['nama']}, {row['lokasi']}"
+            )
+
+            st.success("Aset berhasil dihapus!")
+
+# LOG
+elif menu == "Log Aktivitas":
+    st.header("Log Aktivitas")
+
+    df = pd.read_csv(f"{DATA_DIR}/log.csv")
+
+    if df.empty:
+        st.info("Belum ada log.")
+    else:
+        st.dataframe(df.sort_values("waktu", ascending=False), use_container_width=True)
+
+#log out
+elif menu == "Log out":
+    st.session_state.login = False
+    st.rerun()
+
