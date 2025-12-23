@@ -1,0 +1,18 @@
+id_aset,nama,kategori,kondisi,lokasi,tanggal,barcode
+1,laptop,barang elektronik,baik,ruang keluarga,2025-12-05 10:16:52,D:/bismillah/barcode/001.png
+2,asbak,perabotan,baik,ruang tamu,2025-12-05 10:17:47,D:/bismillah/barcode/002.png
+3,vas bunga,perabotan,baik,ruang tamu,2025-12-05 10:18:02,D:/bismillah/barcode/003.png
+4,meja tamu,perabotan,baik,ruang tamu,2025-12-05 10:18:14,D:/bismillah/barcode/004.png
+5,kursi,perabotan,hilang,ruang tamu,2025-12-05 10:18:28,D:/bismillah/barcode/005.png
+a002,helm,perabotan,baik,dapur,2025-12-15 08:56:11,D:/sistem_manajemen_ART/barcode/a002.png
+a002_1,hp,elektronik,baik,kamar,2025-12-22 09:08:14,D:/sistem_manajemen_ART/barcode/a002_1.png
+a003,motor,kendaraan,baik,parkiran,2025-12-23 09:10:28,D:/sistem_manajemen_ART/barcode/a003.png
+a004,mobil,kendaraan,baik,parkiran,2025-12-23 09:11:55,D:/sistem_manajemen_ART/barcode/a004.png
+a005,kompor,perabotan,baik,dapur,2025-12-23 09:12:19,D:/sistem_manajemen_ART/barcode/a005.png
+a006,1 lusin piring,perabotan,baik,dapur,2025-12-23 09:12:43,D:/sistem_manajemen_ART/barcode/a006.png
+a007,1 lusin gelas,perabotan,baik,dapur,2025-12-23 09:12:57,D:/sistem_manajemen_ART/barcode/a007.png
+a008,1 lusin cangkir,perabotan,baik,dapur,2025-12-23 09:13:09,D:/sistem_manajemen_ART/barcode/a008.png
+a009,kipas angin,perabotan,rusak,dapur,2025-12-23 09:13:46,D:/sistem_manajemen_ART/barcode/a009.png
+a010,AC,perabotan,baik,Kamar ,2025-12-23 09:14:17,D:/sistem_manajemen_ART/barcode/a010.png
+a010_1,gayung,perabotan,hilang,Kamar  mandi,2025-12-23 09:14:52,D:/sistem_manajemen_ART/barcode/a010_1.png
+a011,bak mandi,perabotan,baik,Kamar  mandi,2025-12-23 09:15:03,D:/sistem_manajemen_ART/barcode/a011.png
