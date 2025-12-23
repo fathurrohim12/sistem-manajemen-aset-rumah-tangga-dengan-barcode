@@ -1,0 +1,9 @@
+-streamlit
+-pandas
+-pillow
+-streamlit-option-menu
+-opencv-python
+-numpy
+-pyzbar
+-python-barcode
+-av
