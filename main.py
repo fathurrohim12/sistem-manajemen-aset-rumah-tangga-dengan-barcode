@@ -7,16 +7,16 @@ from streamlit_option_menu import option_menu
 
 from utils import (
     ensure_setup, load_master, save_master, append_log,
-    generate_qr, scan_qr_image, safe_new_id,
+    generate_barcode,  scan_barcode_live,scan_barcode_image,
+    safe_new_id,
     DATA_DIR, QR_DIR
 )
 
-# Setup awal
 ensure_setup()
 
 st.set_page_config(page_title="Manajemen Aset Barcode", layout="wide")
 
-# CSS UNTUK TEMA ESTETIK
+# CSS umum
 st.markdown("""
 <style>
 
@@ -138,13 +138,8 @@ hr {
 </style>
 """, unsafe_allow_html=True)
 
-
-# LOGIN SEDERHANA
-
 if "login" not in st.session_state:
     st.session_state.login = False
-
-# Akun dummy (bisa kamu ganti)
 USERNAME = "admin"
 PASSWORD = "1"
 
@@ -162,9 +157,9 @@ if not st.session_state.login:
         else:
             st.error("Username atau password salah!")
 
-    st.stop()  # menghentikan akses ke sistem sebelum login
+    st.stop()  
 
-#sidebar(menu utama)
+#CSS(menu utama)
 st.markdown("""
 <style>
 
@@ -196,7 +191,7 @@ st.markdown("""
 
 </style>
 """, unsafe_allow_html=True)
-#option menu
+#CSS option menu
 st.markdown("""
 <style>
 /* SIDEBAR UTAMA */
@@ -212,10 +207,7 @@ section[data-testid="stSidebar"] > div {
 </style>
 """, unsafe_allow_html=True)
 
-
-
-
-#TAMPILAN MENU
+#CSS TAMPILAN MENU
 with st.sidebar:
     st.markdown('<div class="menu-title">☰  MENU UTAMA</div>', unsafe_allow_html=True)
 
@@ -286,14 +278,11 @@ with st.sidebar:
 )
 
 
-
 # DASHBOARD
 if menu == "Dashboard":
     st.header("Dashboard")
 
     df = load_master()
-
-    # ===== METRIC CARD =====
     col1, col2, col3 = st.columns(3)
 
     with col1:
@@ -345,8 +334,6 @@ if menu == "Dashboard":
         import matplotlib.pyplot as plt
 
         kondisi_count = df["kondisi"].value_counts()
-
-        # pastikan urutan & warna konsisten
         labels = ["baik", "rusak", "hilang"]
         colors = {
             "baik": "#2e59d9",     # biru
@@ -361,7 +348,6 @@ if menu == "Dashboard":
 
         ax.bar(labels, values)
 
-        # set warna manual
         for bar, color in zip(ax.patches, bar_colors):
             bar.set_color(color)
 
@@ -370,9 +356,6 @@ if menu == "Dashboard":
         ax.set_title("Distribusi Kondisi Aset")
 
         st.pyplot(fig)
-
-
-# TAMBAH ASET
 
 elif menu == "Tambah Aset":
     st.header("Tambah Aset")
@@ -403,11 +386,10 @@ elif menu == "Tambah Aset":
             )
 
         st.markdown("<br>", unsafe_allow_html=True)
-        submit = st.form_submit_button("💾 Simpan Aset")
+        submit = st.form_submit_button("Simpan Aset")
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # LOGIC SIMPAN (TETAP SAMA)
     if submit:
         if raw_id.strip() == "" or nama.strip() == "":
             st.error("ID dan Nama Aset wajib diisi.")
@@ -415,7 +397,8 @@ elif menu == "Tambah Aset":
             id_aset = safe_new_id(raw_id.strip())
             waktu = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-            qr_path = generate_qr(id_aset)
+            qr_path = generate_barcode(id_aset)
+
 
             df = load_master()
             new = {
@@ -438,12 +421,10 @@ elif menu == "Tambah Aset":
             st.image(qr_path, width=180)
             with open(qr_path, "rb") as f:
                 st.download_button(
-                    "⬇️ Download QR Code",
+                    "⬇Download QR Code",
                     f,
                     file_name=f"{id_aset}.png"
                 )
-
-# LIHAT ASET
 
 elif menu == "Lihat Aset":
     st.header("Daftar Aset")
@@ -453,7 +434,6 @@ elif menu == "Lihat Aset":
     if df.empty:
         st.info("Belum ada data aset.")
     else:
-        # 🔍 Pencarian
         keyword = st.text_input("Cari aset (ID / Nama / Lokasi / Kondisi)")
 
         if keyword:
@@ -464,14 +444,13 @@ elif menu == "Lihat Aset":
                 df["kondisi"].str.contains(keyword, case=False)
             ]
 
-        # Urutkan terbaru
         df = df.sort_values("tanggal", ascending=False)
 
         st.dataframe(
             df,
             use_container_width=True
         )
-#update kondisi
+
 elif menu == "Update Kondisi":
     st.header("Update Kondisi Aset")
     df = load_master()
@@ -492,7 +471,6 @@ elif menu == "Update Kondisi":
         if df_filter.empty:
             st.warning("Aset tidak ditemukan.")
         else:
-            # Pilih aset (tetap simple)
             id_aset = st.selectbox(
                 "Pilih aset:",
                 df_filter["id_aset"].tolist()
@@ -526,10 +504,6 @@ elif menu == "Update Kondisi":
 
                 st.success("Kondisi aset berhasil diperbarui!")
 
-
-
-# HAPUS ASET
-
 elif menu == "Hapus Aset":
     st.header("Hapus Aset")
     df = load_master()
@@ -537,7 +511,6 @@ elif menu == "Hapus Aset":
     if df.empty:
         st.info("Tidak ada aset.")
     else:
-        # Kolom pencarian
         keyword = st.text_input("Cari aset (ID atau Nama Aset)")
 
         if keyword:
@@ -551,7 +524,6 @@ elif menu == "Hapus Aset":
         if df_filter.empty:
             st.warning("Aset tidak ditemukan.")
         else:
-            # Pilih aset dari hasil pencarian
             id_aset = st.selectbox(
                 "Pilih aset yang akan dihapus:",
                 df_filter["id_aset"].tolist()
@@ -565,15 +537,11 @@ elif menu == "Hapus Aset":
             )
 
             if st.button("Hapus Aset", type="primary"):
-                # Hapus dari dataframe
                 new_df = df[df["id_aset"] != id_aset]
                 save_master(new_df)
-
-                # Hapus barcode jika ada
                 if "barcode" in row and os.path.exists(row["barcode"]):
                     os.remove(row["barcode"])
 
-                # Log aktivitas
                 append_log(
                     datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     id_aset,
@@ -583,35 +551,36 @@ elif menu == "Hapus Aset":
 
                 st.success("Aset berhasil dihapus!")
 
-# SCAN BARCODE (KAMERA + UPLOAD)
-
 elif menu == "Scan Barcode":
-    st.header("Scan Barcode")
+    st.header("Scan Barcode Aset (Live Camera)")
 
-    st.subheader("Scan via Kamera (Live)")
+    if st.button("Mulai Scan Barcode"):
+        hasil = scan_barcode_live()
 
-    from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
-    from barcode_scanner import BarcodeScanner
+        if hasil:
+            st.success(f"ID Aset Terbaca: {hasil}")
 
-    webrtc_streamer(
-        key="barcode-scanner",
-        video_transformer_factory=BarcodeScanner,
-        media_stream_constraints={"video": True, "audio": False},
-    )
+            df = load_master()
+            data = df[df["id_aset"] == hasil]
 
-    if BarcodeScanner.last_result:
-        st.success(f"Barcode Terbaca: {BarcodeScanner.last_result}")
+            if data.empty:
+                st.error("Aset tidak ditemukan di master.csv")
+            else:
+                nama_barang = data.iloc[0]["nama"]
+                kategori = data.iloc[0]["kategori"]
+                lokasi = data.iloc[0]["lokasi"]
+                kondisi = data.iloc[0]["kondisi"]
 
-        df = load_master()
-        data = df[df["id_aset"] == BarcodeScanner.last_result]
-
-        if data.empty:
-            st.error("ID tidak ditemukan di master.csv.")
+                st.subheader(" Data Aset")
+                st.write(f"**Nama Barang :** {nama_barang}")
+                st.write(f"**Kategori :** {kategori}")
+                st.write(f"**Lokasi :** {lokasi}")
+                st.write(f"**Kondisi :** {kondisi}")
         else:
-            st.write(data)
+            st.warning("Scan dibatalkan / barcode tidak terbaca")
 
     st.divider()
-#scan gambar
+
 elif menu == "Scan gambar":
     st.subheader("Scan dari Gambar (Upload)")
 
@@ -621,7 +590,7 @@ elif menu == "Scan gambar":
         img = Image.open(uploaded).convert("RGB")
         st.image(img, width=250)
 
-        hasil = scan_qr_image(img)
+        hasil = scan_barcode_image(img)  
 
         if hasil:
             st.success(f"ID Terbaca: {hasil}")
@@ -635,7 +604,6 @@ elif menu == "Scan gambar":
         else:
             st.error("Gagal membaca barcode.")
 
-# LOG
 elif menu == "Log Aktivitas":
     st.header("Log Aktivitas")
 
@@ -646,7 +614,6 @@ elif menu == "Log Aktivitas":
     else:
         st.dataframe(df.sort_values("waktu", ascending=False), use_container_width=True)
 
-#log out
 elif menu == "Log out":
     st.session_state.login = False
     st.rerun()
