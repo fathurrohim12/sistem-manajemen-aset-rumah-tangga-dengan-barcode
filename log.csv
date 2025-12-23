@@ -1,0 +1,33 @@
+waktu,id_aset,aksi,detail2025-12-03 11:43:50,AS251203114350,tambah,sapu, ruang tamu
+2025-12-03 11:44:53,AS251203114453,tambah,meja, ruang tamu
+2025-12-03 11:45:03,AS251203114503,tambah,vas bunga, ruang tamu
+2025-12-03 11:45:11,AS251203114511,tambah,asbak, ruang tamu
+2025-12-04 12:16:11,AS251203114503,update_kondisi,baik → rusak
+2025-12-04 13:11:25,AS251204131125,tambah,teko, dapur
+2025-12-05 10:13:27,001,tambah,laptop, ruang keluarga
+2025-12-05 10:16:07,AS251203114350,hapus,sapu, ruang tamu
+2025-12-05 10:16:11,AS251203114453,hapus,meja, ruang tamu
+2025-12-05 10:16:12,AS251203114503,hapus,vas bunga, ruang tamu
+2025-12-05 10:16:14,AS251203114511,hapus,asbak, ruang tamu
+2025-12-05 10:16:15,AS251204131125,hapus,teko, dapur
+2025-12-05 10:16:16,1,hapus,laptop, ruang keluarga
+2025-12-05 10:16:52,001,tambah,laptop, ruang keluarga
+2025-12-05 10:17:47,002,tambah,asbak, ruang tamu
+2025-12-05 10:18:02,003,tambah,vas bunga, ruang tamu
+2025-12-05 10:18:14,004,tambah,meja tamu, ruang tamu
+2025-12-05 10:18:28,005,tambah,kursi, ruang tamu
+2025-12-10 17:20:22,5,update_kondisi,baik → hilang
+2025-12-15 08:56:11,a002,tambah,helm, dapur
+2025-12-22 09:08:14,a002_1,tambah,hp, kamar
+2025-12-23 09:10:28,a003,tambah,motor, parkiran
+2025-12-23 09:11:55,a004,tambah,mobil, parkiran
+2025-12-23 09:12:19,a005,tambah,kompor, dapur
+2025-12-23 09:12:43,a006,tambah,1 lusin piring, dapur
+2025-12-23 09:12:57,a007,tambah,1 lusin gelas, dapur
+2025-12-23 09:13:09,a008,tambah,1 lusin cangkir, dapur
+2025-12-23 09:13:46,a009,tambah,kipas angin, dapur
+2025-12-23 09:14:17,a010,tambah,AC, Kamar 
+2025-12-23 09:14:52,a010_1,tambah,gayung, Kamar  mandi
+2025-12-23 09:15:03,a011,tambah,bak mandi, Kamar  mandi
+2025-12-23 09:15:59,a010_1,update_kondisi,baik → hilang
+2025-12-23 09:16:59,a009,update_kondisi,baik → rusak
